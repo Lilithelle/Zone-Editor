@@ -616,6 +616,7 @@
     function fileToArray() {
       fileIn.normalize();
       var docEls = fileIn.getElementsByTagName("DIV");
+      console.log("Div elements: " + docEls.length);
       fileLines.length = 0;
       for(var index = 0; index < docEls.length; index++) {
         fileLines.push(divText(docEls[index]));
@@ -629,6 +630,7 @@
         uri += encodeURIComponent(fileLines[index] + "\n");
       }
       saveFile.download = fileName;
+      console.log("Uri length: " + uri.length + ", file lines: " + fileLines.length);
       saveFile.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + uri);
     }
 
@@ -720,7 +722,7 @@
     function divText(inDiv) {
       lastAnsiF = "&f256";
       lastAnsiB = "&-l";
-      return elementText(inDiv);
+      return elementText(inDiv).replace(/\xA0/g, " ");
     }
 
     function showLineNo() {
