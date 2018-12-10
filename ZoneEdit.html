@@ -27,7 +27,7 @@
   <body>
     <div>
       <div>
-        <span>Line:</span><span id="lineNo">0&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span onclick="debug()">Line:</span><span id="lineNo">0&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <input type="file" id="file-input" accept=".mob, .obj, .pow, .qst, .shp, .soc, .wld, .zon" />
         <a id="file-output" href="data:text/plain;charset=utf-8," download="Untitled" onclick="writeFile()">Save File</a>
         <button type="button" onclick="validateFile()">Check file for errors.</button>
@@ -75,6 +75,9 @@
     <small>&copy; Copyright 2018, Birdsnest Management Limited.</small>
   </footer>
   <script>
+    function debug() {
+      console.log(fileIn.innerHTML);
+    }
     // must not be one of the 256, should match basecolor style class
     var defaultColor = "#B0B0B0";
     var colors = ["#000000", "#800000", "#008000", "#808000", "#000080",
@@ -127,7 +130,6 @@
     var saveFile = document.getElementById('file-output');
     var fileDebug = document.getElementById('file-debug');
     var mobVerify = [], objVerify = [], qstVerify = [], shpVerify = [], socVerify = [], wldVerify = [], zonVerify = [];
-
     mobVerify.push(new Parser(/^#\d{1,6}$/, "#mob-number(6 digit)", 1, 0));
     mobVerify.push(new Parser(/^[0-9A-Z'\-\s]+~$/i, "keywords-list~", 1, 0));
     mobVerify.push(new Parser(/^[^~]+~$/, "mob-name~", 1, 0));
@@ -486,8 +488,8 @@
     function displayContents(contents) {
       fileLines = contents.split(/\r?\n/);
       var ansiWhole = ("&n" + contents).replace(/\r?\n/g, "</div><div>&n")
-        .replace(/&n/gi, "&-l&f256")
-        .replace(/&\-l&f256<\/div>/gi, "&n</div>")
+        .replace(/&n/gi, "&-l&f256").replace(/&\-l&f256<\/div>/gi, "&n</div>")
+        .replace(/<div>&n<\/div>/gi, "<div><br></div>")
         .replace(/&cl|&\+l/g, "&f000").replace(/&cr|&\+r/g, "&f001")
         .replace(/&cg|&\+g/g, "&f002").replace(/&cy|&\+y/g, "&f003")
         .replace(/&cb|&\+b/g, "&f004").replace(/&cm|&\+m/g, "&f005")
@@ -495,7 +497,8 @@
         .replace(/&cL|&\+L/g, "&f008").replace(/&cR|&\+R/g, "&f009")
         .replace(/&cG|&\+G/g, "&f010").replace(/&cY|&\+Y/g, "&f011")
         .replace(/&cB|&\+B/g, "&f012").replace(/&cM|&\+M/g, "&f013")
-        .replace(/&cC|&\+C/g, "&f014").replace(/&cW|&\+W/g, "&f015");
+        .replace(/&cC|&\+C/g, "&f014").replace(/&cW|&\+W/g, "&f015")
+        .replace(/ /g, "&nbsp;");
       ansiWhole = ansiWhole.replace(/(&\-[bcglmrwy])+&\-/g, "&-");
       ansiWhole = ansiWhole.replace(/(&f\d\d\d)+&f/g, "&f");
       ansiWhole = ansiWhole.replace(/(&\-[bcglmrwy]|&f\d\d\d|)+(&f\d\d\d&\-[bcglmrwy])/g, "$2");
