@@ -27,7 +27,7 @@
   <body>
     <div>
       <div>
-        <span onclick="debug()">Line:</span><span id="lineNo">0&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span onclick="debug()">Line:</span><span id="lineNo">1&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <input type="file" id="file-input" accept=".mob, .obj, .pow, .qst, .shp, .soc, .wld, .zon" />
         <a id="file-output" href="data:text/plain;charset=utf-8," download="Untitled" onclick="writeFile()">Save File</a>
         <button type="button" onclick="validateFile()">Check file for errors.</button>
@@ -77,6 +77,9 @@
   <script>
     function debug() {
       console.log(fileIn.innerHTML);
+      for(index = 0; index < fileIn.childNodes.length; index++) {
+        console.log("nodeName: '" + fileIn.childNodes[index].nodeName  + "', NodeValue: '" + fileIn.childNodes[index].nodeValue + "', nodeType: " + fileIn.childNodes[index].nodeType);
+      }
     }
     // must not be one of the 256, should match basecolor style class
     var defaultColor = "#B0B0B0";
@@ -727,21 +730,25 @@
 
     function showLineNo() {
       if (document.activeElement != fileIn) { return; }
-      var divNode = window.getSelection().anchorNode;
-      while (divNode != null && divNode.nodeName.toUpperCase() != "DIV") {
-        divNode = divNode.parentElement;
-      }
-      if (divNode == cursorNode) { return; }
-      cursorNode = divNode;
-      var docEls = fileIn.getElementsByTagName("DIV");
-      for(var index = 0; index <  docEls.length; index++) {
-        if (docEls[index] === divNode) {
-          var line = String(index + 1);
-          if (line.length < 5) { line += "&nbsp;".repeat(5 - line.length); }
-          document.getElementById('lineNo').innerHTML = line;
-          break;
+      var line = 1, cursorNode = window.getSelection().anchorNode;
+      if (cursorNode != fileIn) {
+        while (cursorNode.parentNode != fileIn) {
+          cursorNode = cursorNode.parentNode;
+        }
+        while(cursorNode != fileIn.firstChild) {
+          cursorNode = cursorNode.previousSibling;
+          if (cursorNode.nodeName.toUpperCase() == "DIV") { line++; }
+          else {
+            line++;
+            while (cursorNode != fileIn.firstChild && cursorNode.previousSibling.nodeName.toUpperCase() != "DIV") {
+              cursorNode = cursorNode.previousSibling;
+            }
+          }
         }
       }
+      line = String(line);
+      if (line.length < 5) { line += "&nbsp;".repeat(5 - line.length); }
+      document.getElementById('lineNo').innerHTML = line;
     }
 
     showPalette();
