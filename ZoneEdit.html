@@ -70,10 +70,10 @@
       </div>
       <div id="file-in" contenteditable="true" class="basecolor" style="height:90vh;width:100%;overflow-y:auto;" onclick="showLineNo()" onkeyup="showLineNo()"></div>
     </div>
+    <footer>
+      <small>&copy; Copyright 2018, Birdsnest Management Limited.</small>
+    </footer>
   </body>
-  <footer>
-    <small>&copy; Copyright 2018, Birdsnest Management Limited.</small>
-  </footer>
   <script>
     function debug() {
       console.log(fileIn.innerHTML);
@@ -618,12 +618,65 @@
 
     function fileToArray() {
       fileIn.normalize();
-      var docEls = fileIn.getElementsByTagName("DIV");
-      console.log("Div elements: " + docEls.length);
       fileLines.length = 0;
-      for(var index = 0; index < docEls.length; index++) {
-        fileLines.push(divText(docEls[index]));
+      if (fileIn.childNodes.length == 0) { return; }
+      var line, node = fileIn.firstChild;
+      line = ""; lastAnsiF = "&f256"; lastAnsiB = "&-l";
+      while (node != null) {
+        line += nodeText(node, fileIn);
+        if (node.nodeName == "DIV" || node.nextSibling == null || node.nextSibling.nodeName == "DIV") {
+          fileLines.push(line);
+          line = ""; lastAnsiF = "&f256"; lastAnsiB = "&-l";
+        }
+        node = node.nextSibling;
       }
+    }
+
+    function nodeText(node, element) {
+      if (node.nodeType == 3) {
+        var foreRGBA = stringToRGBA(window.getComputedStyle(element, null).getPropertyValue("color"));
+        var backRGBA = stringToRGBA(window.getComputedStyle(element, null).getPropertyValue("background"));
+        if (foreRGBA == null) { foreRGBA = [parseInt(defaultColor.substr(1,2), 16),parseInt(defaultColor.substr(3,2), 16),parseInt(defaultColor.substr(5,2), 16),1]; }
+	if (backRGBA == null) { backRGBA = [0, 0, 0, 1]; }
+        var foreAnsi = colorToAnsi(RGBAtoRGB(foreRGBA, backRGBA), 257);
+        var backAnsi = colorToAnsi(RGBAtoRGB(backRGBA, [0, 0, 0]), 8).replace("&c", "&-");
+	if (backAnsi == lastAnsiB || node.nodeValue.length == 0) { backAnsi = ""; }
+        else { lastAnsiB = backAnsi; }
+	if (foreAnsi == lastAnsiF || node.nodeValue.length == 0) { foreAnsi = ""; }
+        else { lastAnsiF = foreAnsi; }
+        if (foreAnsi == "&f256") {
+          if (backRGBA[0] == 0 || backRGBA[1] == 0 || backRGBA[2] == 0)
+            { return "&n" + node.nodeValue; }
+          foreAnsi = colorToAnsi(foreRGBA, 256);
+        }
+        return backAnsi + foreAnsi + node.nodeValue.replace(/\xA0/g, " ");
+      }
+      if (node.nodeType != 1) { return ""; }
+      var text = "";
+      for(var index = 0; index < node.childNodes.length; index++) {
+        text += nodeText(node.childNodes[index], node);
+      }
+      return text;
+    }
+
+    function RGBAtoRGB(rgba, back) {
+      var rgb = rgba, alpha = rgba[3];
+      rgb.pop();
+      if (alpha < 1) {
+        rgb[0] = (1 - alpha) * back[0] + alpha * rgb[0];
+        rgb[1] = (1 - alpha) * back[1] + alpha * rbg[1];
+        rgb[2] = (1 - alpha) * back[2] + alpha * rgb[2];
+      }
+      return rgb;
+    }
+
+    function stringToRGBA(str) {
+      var colorParts = /rgba?\((\d+), (\d+), (\d+),? ?(\d?\.?\d*)?\).*/.exec(str);
+      if (colorParts != null) {
+        colorParts.shift();
+        if (colorParts.length = 3) { colorParts.push(1); }
+      }
+      return colorParts;
     }
 
     function writeFile(e) {
@@ -633,7 +686,6 @@
         uri += encodeURIComponent(fileLines[index] + "\n");
       }
       saveFile.download = fileName;
-      console.log("Uri length: " + uri.length + ", file lines: " + fileLines.length);
       saveFile.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + uri);
     }
 
@@ -669,65 +721,6 @@
       }
     }
 
-    function elementText(inEle) {
-      if (inEle.childElementCount == 0) {
-        if (inEle.textContent.length == 0) { return ""; }
-        var foreStr, backStr;
-        foreStr = window.getComputedStyle(inEle, null).getPropertyValue("color");
-        backStr = window.getComputedStyle(inEle, null).getPropertyValue("background");
-        var colorParts = /rgba?\((\d+), (\d+), (\d+),? ?(\d?\.?\d*)?\).*/.exec(foreStr);
-        var foreRGBA = [parseInt(defaultColor.substr(1,2), 16),parseInt(defaultColor.substr(3,2), 16),parseInt(defaultColor.substr(5,2), 16),1];
-        if (colorParts != null) {
-          colorParts.shift();
-          foreRGBA = colorParts;
-          if (colorParts.length = 3) { foreRGBA.push(1); }
-        };
-        var colorParts = /rgba?\((\d+), (\d+), (\d+),? ?(\d?\.?\d*)?\).*/.exec(backStr);
-        var backRGBA = [0,0,0,1];
-        if (colorParts != null) {
-          colorParts.shift();
-          backRGBA = colorParts;
-          if (colorParts.length = 3) { backRGBA.push(1); }
-        };
-        var alpha = foreRGBA[3];
-        if (alpha != 1) {
-          foreRGBA[0] = (1 - alpha) * backRGBA[0] + alpha * foreRGBA[0];
-          foreRGBA[1] = (1 - alpha) * backRGBA[1] + alpha * foreRGBA[1];
-          foreRGBA[2] = (1 - alpha) * backRGBA[2] + alpha * foreRGBA[2];
-        }
-        var alpha = backRGBA[3];
-        if (alpha != 1) {
-          backRGBA[0] = alpha * backRGBA[0];
-          backRGBA[1] = alpha * backRGBA[1];
-          backRGBA[2] = alpha * backRGBA[2];
-        }
-        var foreAnsi = colorToAnsi(foreRGBA, 257);
-        var backAnsi = colorToAnsi(backRGBA, 8).replace("&c", "&-");
-        // No need to add ansi if it hasn't changed or element is just spaces.
-	if (backAnsi == lastAnsiB || inEle.innerText.length == 0) { backAnsi = ""; }
-        else { lastAnsiB = backAnsi; }
-	if (foreAnsi == lastAnsiF || inEle.innerText.length == 0) { foreAnsi = ""; }
-        else { lastAnsiF = foreAnsi; }
-        if (foreAnsi == "&f256") {
-          if (backRGBA[0] == 0 || backRGBA[1] == 0 || backRGBA[2] == 0)
-            { return "&n" + inEle.textContent; }
-          foreAnsi = colorToAnsi(foreRGBA, 256);
-        }
-        return backAnsi + foreAnsi + inEle.textContent;
-      }
-      var eleText = "";
-      for(var index = 0; index < inEle.childElementCount; index++) {
-        eleText += elementText(inEle.children[index]);
-      }
-      return eleText;
-    }
-
-    function divText(inDiv) {
-      lastAnsiF = "&f256";
-      lastAnsiB = "&-l";
-      return elementText(inDiv).replace(/\xA0/g, " ");
-    }
-
     function showLineNo() {
       if (document.activeElement != fileIn) { return; }
       var line = 1, cursorNode = window.getSelection().anchorNode;
@@ -737,10 +730,10 @@
         }
         while(cursorNode != fileIn.firstChild) {
           cursorNode = cursorNode.previousSibling;
-          if (cursorNode.nodeName.toUpperCase() == "DIV") { line++; }
+          if (cursorNode.nodeName == "DIV") { line++; }
           else {
             line++;
-            while (cursorNode != fileIn.firstChild && cursorNode.previousSibling.nodeName.toUpperCase() != "DIV") {
+            while (cursorNode != fileIn.firstChild && cursorNode.previousSibling.nodeName != "DIV") {
               cursorNode = cursorNode.previousSibling;
             }
           }
