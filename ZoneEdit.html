@@ -693,12 +693,16 @@
 
     function writeFile(e) {
       fileToArray();
-      var uri = "";
-      for(var index = 0; index < fileLines.length; index++) {
-        uri += encodeURIComponent(fileLines[index] + "\n");
-      }
+      var fileBlob = new Blob([fileLines.join("\n")], {type : 'text/plain'});
+      window.URL.revokeObjectURL(saveFile.href);
+      saveFile.href = window.URL.createObjectURL(fileBlob);
       saveFile.download = fileName;
-      saveFile.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + uri);
+//      var uri = "";
+//      for(var index = 0; index < fileLines.length; index++) {
+//        uri += encodeURIComponent(fileLines[index] + "\n");
+//      }
+//      saveFile.download = fileName;
+//      saveFile.setAttribute('href', 'data:text/plain;charset=utf-8,' + uri);
     }
 
     function Parser(pattern, message, success, failure) {
