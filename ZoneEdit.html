@@ -139,7 +139,7 @@
     mobVerify.push(new Parser(/^[^~]*$/, "mob-description", 0, 1));
     mobVerify.push(new Parser(/^~$/, "~", 1, 0));
     mobVerify.push(new Parser(/^\d{1,10}\s\d{1,10}\s\d{1,10}\s\-?(\d{1,3}|1000)\sS$/, "flags(10 digit) affect1(10 digit) affect2(10 digit) alignment(-1000 to 1000) 'S'", 1, 0));
-    mobVerify.push(new Parser(/[0-9A-Z]{1,2}\s\d{1,5}\s\d{1,5}(\s|\s[0-9A-Z]{1,2}(\.[0-9A-Z]{1,2})+)?$/i, "race-type(2 letter) height(5 digit) weight(5 digit) and optional hate list(2 letter combos joined by dots)", 1, 0));
+    mobVerify.push(new Parser(/[0-9A-Z]{1,2}\s\d{1,5}\s\d{1,5}(\s|\s[0-9A-Z]{1,2}(\.[0-9A-Z]{1,2})*)?$/i, "race-type(2 letter) height(5 digit) weight(5 digit) and optional hate list(2 letter combos joined by dots)", 1, 0));
     mobVerify.push(new Parser(/^[0-5]?\d\s\d{1,3}\s\-?\d{1,3}\s\d{1,6}d\d{1,6}\+\d{1,6}\s\d{1,3}d\d{1,3}\+\d{1,3}$/, "level(0-59) thaco(3 digit) ac(3 digit) hp-dice(eg. 5d5+50) damage-dice(eg. 3d4+10)", 1, 0));
     mobVerify.push(new Parser(/^\d{1,5}\.\d{1,5}\.\d{1,5}\.\d{1,5}\s\d{1,9}$/, "coins(5 digit.5 digit.5 digit.5 digit) experience(9 digit)", 1, 0));
     mobVerify.push(new Parser(/^(\d{1,2}|1[0-2]\d|13[0-1])\s(\d{1,2}|1[0-2]\d|13[0-1])\s[0-2](\s?\s?\s?|\s(\d|1\d|2[0-5])\s?\s?|\s(\d|1\d|2[0-5])\s(\d|\d\d|100)\s?|\s(\d|1\d|2[0-5])\s(\d|\d\d|100)\s\d{1,5})$/, "load-position(0-131) default-position(0-131) sex(0-2) and optionally class(0-25), magic-resist(0-100), and prestige(5 digits)", 1, 0));
@@ -147,6 +147,7 @@
     mobVerify.push(new Parser(/^TEMPLATE:\s[0-9A-Za-z'\-\+]+(\s*,\s*[0-9A-Za-z'\-\+]+)*$/, "TEMPLATE: template-list", 1, 1));
     mobVerify.push(new Parser(/^FLAGS:\s[\w\s]+(\s*,\s*[\w\s]+)*$/, "FLAGS: flags-list", 1, 1));
     mobVerify.push(new Parser(/^EQUIP(MENT)?:\s\d{1,6}(\s*,\s*\d{1,6})*$/, "EQUIP(MENT): number-list(6 digit)", 1 , 1));
+    mobVerify.push(new Parser(/^AFFECTS:\s[\w\s]+(\s*,\s*[\w\s]+)*$/, "AFFECTS: affects-list", 1 , 1));
     objVerify.push(new Parser(/^#\d{1,6}$/, "#object-number(6 digit)", 1, 0));
     objVerify.push(new Parser(/^[0-9A-Z'\-\s]+~$/i, "keywords-list~", 1, 0));
     objVerify.push(new Parser(/^[^~]+~$/, "object-name~", 1, 0));
@@ -171,8 +172,8 @@
     objVerify.push(new Parser(/^A$/, "A", 1, 2));
     objVerify.push(new Parser(/^\d{1,2}\s\-?\d{1,3}$/, "location(2 digit) modifier(+/- 3 digit)", 1, 0));
     objVerify.push(new Parser(/^M\s\d{1,2}(\s\d{1,4}\s\d{1,4}\s\-?\d{1,2}\s\d{1,2})?$/, "M enchantment(2 digit) optional:damage(4 digit) frequency(4 digit) modifier(+/- 2 digit) duration(2 digit)", 0, 1));
-    objVerify.push(new Parser(/^POWER:\s[0-9A-Za-z'\- ]+(\s*,\s*[0-9A-Za-z'\- ]+)*$/, "POWER: powers-name-list", 1, 1));
     objVerify.push(new Parser(/^RESIST:\s[A-Za-z]+\s\-?\d{1,3}(\s*,\s*[A-Za-z]+\s\-?\d{1,3})*$/, "RESIST: resist-list", 1, 1));
+    objVerify.push(new Parser(/^POWER:\s[0-9A-Za-z'\- ]+(\s*,\s*[0-9A-Za-z'\- ]+)*$/, "POWER: powers-name-list", 1, 1));
     objVerify.push(new Parser(/^AFFECTS:\s[\w\s]+(\s*,\s*[\w\s]+)*$/, "AFFECTS: affects-list", 1, 1));
     objVerify.push(new Parser(/^FLAGS:\s[\w\s]+(\s*,\s*[\w\s]+)*$/, "FLAGS: flags-list", 1, 1));
     objVerify.push(new Parser(/^WEAR:\s[\w\s]+(\s*,\s*[\w\s]+)*$/, "WEAR: wear-list", 1, 1));
