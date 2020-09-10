@@ -133,7 +133,7 @@
     var fileDebug = document.getElementById('file-debug');
     var mobVerify = [], objVerify = [], qstVerify = [], shpVerify = [], socVerify = [], wldVerify = [], zonVerify = [];
     mobVerify.push(new Parser(/^#\d{1,6}$/, "#mob-number(6 digit)", 1, 0));
-    mobVerify.push(new Parser(/^[0-9A-Z'\-\s]+~$/i, "keywords-list~", 1, 0));
+    mobVerify.push(new Parser(/^[0-9A-Z'\-\_\s]+~$/i, "keywords-list~", 1, 0));
     mobVerify.push(new Parser(/^[^~]+~$/, "mob-name~", 1, 0));
     mobVerify.push(new Parser(/^[^~]+~$/, "mob-in-room-string~", 1, 0));
     mobVerify.push(new Parser(/^[^~]*$/, "mob-description", 0, 1));
