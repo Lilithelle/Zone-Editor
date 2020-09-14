@@ -149,7 +149,7 @@
     mobVerify.push(new Parser(/^EQUIP(MENT)?:\s\d{1,6}(\s*,\s*\d{1,6})*$/, "EQUIP(MENT): number-list(6 digit)", 1 , 1));
     mobVerify.push(new Parser(/^AFFECTS:\s[\w\s]+(\s*,\s*[\w\s]+)*$/, "AFFECTS: affects-list", 1 , 1));
     objVerify.push(new Parser(/^#\d{1,6}$/, "#object-number(6 digit)", 1, 0));
-    objVerify.push(new Parser(/^[0-9A-Z'\-\s]+~$/i, "keywords-list~", 1, 0));
+    objVerify.push(new Parser(/^[0-9A-Z'\_\-\s]+~$/i, "keywords-list~", 1, 0));
     objVerify.push(new Parser(/^[^~]+~$/, "object-name~", 1, 0));
     objVerify.push(new Parser(/^[^~]+~$/, "object-in-room-string~", 1, 0));
     objVerify.push(new Parser(/^~$/, "~", 1, 0));
