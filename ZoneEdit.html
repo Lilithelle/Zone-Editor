@@ -155,7 +155,7 @@
     objVerify.push(new Parser(/^~$/, "~", 1, 0));
     objVerify.push(new Parser(/^([1-9]|[1-3]\d|4[0-8])\s\d{1,10}\s\d{1,8}(\s\d{1,10})?(\s\d{1,5})?$/, "type(1-48) extra-flags(10 digit) wear-flags(10 digit) optional anti-flags(10 digit) optional anti-align(5 digit)", 1, 0));
     objVerify.push(new Parser(/^\-?\d{1,10}\s\-?\d{1,10}(\s\-?\d{1,10}\s\-?\d{1,10}){1,3}$/, "4, 6, or 8 values(+/- 10 digit)", 1, 0));
-    objVerify.push(new Parser(/^\-?\d{1,4}\s\d{1,7}\s0$/, "weight(+/- 4 digit) value(7 digit) storage-cost(0)", 1, 0));
+    objVerify.push(new Parser(/^\-?\d{1,4}\s\d{1,8}\s0$/, "weight(+/- 4 digit) value(8 digit) storage-cost(0)", 1, 0));
     objVerify.push(new Parser(/^\d{1,10}$/, "special-1", 1, 3));
     objVerify.push(new Parser(/^\d{1,10}$/, "special-2", 1, 2));
     objVerify.push(new Parser(/^\d{1,10}$/, "special-3", 1, 1));
